@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import Link from "next/link";
 
-import dbConnect from '../config/dbConfig';
-import Movie from '../models/movie';
+import conectarDB from '../config/dbConfig';
+import Movie from '../models/Movie';
 
 
 export default function Home({ movies }) {
@@ -43,19 +43,20 @@ export default function Home({ movies }) {
   )
 }
 
-// si o si para que funcione hay  que hacer el return {props: {xxxx:xxxx}}
-
-//como el _id de mongo es un número, lo vamos a convertir a string
+//renderizando en el servidor.  Hace que el servidor nos traiga la info y lo pinte en el sitio web, asi se mejora el SEO (por ejemplo un  blog y el detalle de sus posts, que sí necesitan SEO)
+//SWR es el navegador quien va a traer la info y las va pintar por lo tanto no va a ver mucho SEO (por ejemplo un panel de administrador, que no necesita SEO)
+//dentro de esta función no se puede utiliza rel fetch para consumir nuestra propia API, de la next (archivo api) entonces se hce la conexión directa con la BBDD y se le pide lo que se necesite
 export async function getServerSideProps() {
   try {
-    await dbConnect()
-    const res = await Movie.find({})
-    // console.log(res)
-
+    await conectarDB() //conexion BBDD
+    const res = await Movie.find({}) //Le pedimos todas las pelis
+    // console.log(res) 
+    
     const movies = res.map(item => {
       const oneMovie = item.toObject() //guardo en onMovie un obj clave-valor
       // console.log(oneMovie)
-
+      
+      //como el _id de mongo es un número, lo vamos a convertir a string
       //oneMovie._id = `${oneMovie._id}` esta sintaxis convierte un number en string, es lo mismo que la siguiente línea
 
       oneMovie._id = oneMovie._id.toString() //convierte a string
@@ -66,11 +67,14 @@ export async function getServerSideProps() {
 
 
     return {
-      props: { movies: movies }
+      props: { movies: movies } //muy importante hacer este return así!!! con las props
     }
   }
-  catch (err) {
-    console.log(err)
+  catch (error) {
+    console.log(error)
+    return {
+      props: { success: false, error: 'Error' } //muy importante hacer este return así!!! con las props
+    }
   }
 
 
