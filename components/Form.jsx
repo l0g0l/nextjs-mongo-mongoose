@@ -112,7 +112,7 @@ const Form = ({ formdata, forNewMovie = true }) => {
                     type="text"
                     className="form-control my-2"
                     placeholder="Plot"
-                    autoComplete="off"
+                    autoComplete="on"
                     name="plot"
                     value={form.plot}
                     onChange={handleChange} />
