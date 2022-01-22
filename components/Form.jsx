@@ -104,7 +104,7 @@ const Form = ({ formdata, forNewMovie = true }) => {
                     type="text"
                     className="form-control my-2"
                     placeholder="Title"
-                    autoComplete="off"
+                    autoComplete="on"
                     name="title"
                     value={form.title}
                     onChange={handleChange} />
